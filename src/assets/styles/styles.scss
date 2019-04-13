@@ -1,0 +1,30 @@
+.bg-pattern {
+  position: relative;
+
+  &::after {
+    position: absolute;
+    content: "";
+    opacity: 0.4;
+    background-image: url(https://storage.googleapis.com/grovider-assets/pattern.png);
+    background-repeat: repeat;
+    background-position: 0 0;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+  }
+}
+
+.is-dashed {
+  margin: auto;
+  width: 30%;
+  text-align: center;
+  border-bottom: 1px dashed #b8c2cc;
+  line-height: 0.1em;
+
+  span {
+    background: white;
+    padding: 0 5px;
+  }
+}
