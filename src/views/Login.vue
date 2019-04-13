@@ -1,6 +1,7 @@
 <template>
   <div class="bg-pattern min-h-screen">
     <div class="flex flex-col h-screen items-center justify-center">
+      <alert class="mt-1" :message="formMessage" v-if="formError" />
       <div class="form flex flex-col p-4 px-6">
         <div class="mb-6">
           <h3 class="text-pink mb-4 font-black">
@@ -11,8 +12,9 @@
             Enter your personal details and start your journey today.
           </p>
         </div>
-
-        <form class="flex flex-col items-center justify-center w-full" @submit.prevent="signInUser">
+        
+        <ValidationObserver class="w-full" ref="observer">
+        <form class="flex flex-col items-center justify-center w-full" @submit.prevent="signInUser" slot-scope="{ invalid }" ref="form">
           <Validator name="Full Name" rules="required|alpha" class="w-full">
             <div class="mb-5 w-full" slot-scope="{ valid }">
               <label class="block text-grey text-xs font-bold capitalize" for="Full Name">
@@ -59,9 +61,10 @@
           </div>
           </Validator>
 
-          <div class="mb-5 w-full">
-            <input type="submit" value="Sign Up"
-              class="bg-pink cursor-pointer hover:bg-pink-dark text-white font-bold py-2 px-4 rounded w-full">
+          <div class="mb-5 w-full relative">
+            <input type="submit" :value="loadingForm ? '' : 'Sign Up'"
+              class="bg-pink cursor-pointer hover:bg-pink-dark text-white font-bold py-2 px-4 rounded w-full" :disabled="invalid">
+              <spinner v-if="loadingForm" />
           </div>
 
           <div class="mb-5 w-full">
@@ -85,6 +88,7 @@
           </p>
 
         </form>
+        </ValidationObserver>
       </div>
     </div>
   </div>
@@ -97,6 +101,7 @@
   import TwitterIcon from "@/icons/Twitter.vue"
   import FacebookIcon from "@/icons/Facebook.vue"
   import InputState from "@/components/InputState.vue"
+  import Alert from "@/components/Alert.vue"
 
   import {
     Component,
@@ -110,18 +115,45 @@
       PasswordIcon,
       TwitterIcon,
       FacebookIcon,
-      InputState
+      InputState,
+      Alert
     }
   })
   export default class Login extends Vue {
     email: string = '';
     fullName: string = '';
     password: string = '';
-    errors: Array<any> = [];
     valid: any;
+    loadingForm: boolean = false;
+    formError = false;
+    formMessage = '';
 
-    signInUser(){
+    async signInUser(){
+      if(this.loadingForm) return false
+      this.loadingForm = true;
 
+      const isValid = await this.$refs.observer.validate();
+      if (!isValid) {
+        return false
+      }
+
+      const data = {
+        email: this.email,
+        full_name: this.fullName,
+        password: this.password
+      }
+
+      try {
+        const url = 'users'
+        const res = await this.$http.post(url, data)
+        console.log(res);
+      } catch (error) {
+        this.formError = true;
+        console.log(error, 'error');
+        this.formMessage = this.$http.getErrorMessage(error);
+      } finally {
+        this.loadingForm = false
+      }
     }
   }
 </script>
