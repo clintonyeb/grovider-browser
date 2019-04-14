@@ -1,7 +1,7 @@
 <template>
   <div class="bg-pattern min-h-screen">
     <div class="flex flex-col h-screen items-center justify-center">
-      <alert class="mt-1" :message="formMessage" v-if="formError" />
+      <alert class="mt-1" :message="formMessage" v-if="formError" header="Problem creating account." />
       <div class="form flex flex-col p-4 px-6">
         <div class="mb-6">
           <h3 class="text-pink mb-4 font-black">
