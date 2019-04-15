@@ -14,9 +14,26 @@ class Http {
       http.open("GET", url, true);
       http.setRequestHeader("content-type", "application/json");
       http.setRequestHeader("accept", "application/json");
+      http.setRequestHeader('Access-Control-Allow-Origin', '*')
       if (token) http.setRequestHeader("Authorization", token);
       http.onreadystatechange = () =>
         self._handleResponse(http, resolve, reject);
+      http.send();
+    });
+  }
+
+  getRaw(link: string, token:string) {
+    const self = this;
+    const url = this.getURL(link);
+    return new Promise((resolve, reject) => {
+      const http = new XMLHttpRequest();
+      http.open("GET", url, true);
+      http.setRequestHeader("content-type", "application/json");
+      // http.setRequestHeader("accept", "application/json");
+      http.setRequestHeader('Access-Control-Allow-Origin', '*')
+      if (token) http.setRequestHeader("Authorization", token);
+      http.onreadystatechange = () =>
+        self._handleResponseRaw(http, resolve, reject);
       http.send();
     });
   }
@@ -29,6 +46,7 @@ class Http {
       http.open("PUT", url, true);
       http.setRequestHeader("content-type", "application/json");
       http.setRequestHeader("accept", "application/json");
+      http.setRequestHeader('Access-Control-Allow-Origin', '*')
       if (token) {
         http.setRequestHeader("Authorization", token);
       }
@@ -46,6 +64,7 @@ class Http {
       http.open("POST", url, true);
       http.setRequestHeader("content-type", "application/json");
       http.setRequestHeader("accept", "application/json");
+      http.setRequestHeader('Access-Control-Allow-Origin', '*')
       if (token) http.setRequestHeader("Authorization", token);
       http.onreadystatechange = () =>
         self._handleResponse(http, resolve, reject);
@@ -61,6 +80,7 @@ class Http {
       http.open("POST", url, true);
       http.setRequestHeader("content-type", "application/json");
       http.setRequestHeader("accept", "application/json");
+      http.setRequestHeader('Access-Control-Allow-Origin', '*')
       http.setRequestHeader("Authorization", token);
       http.onreadystatechange = () =>
         self._handleResponse(http, resolve, reject);
@@ -76,6 +96,7 @@ class Http {
       http.open("DELETE", url, true);
       http.setRequestHeader("content-type", "application/json");
       http.setRequestHeader("accept", "application/json");
+      http.setRequestHeader('Access-Control-Allow-Origin', '*')
       http.setRequestHeader("Authorization", token);
 
       http.onreadystatechange = () =>
@@ -92,6 +113,7 @@ class Http {
       http.open("POST", url, true);
       http.setRequestHeader("content-type", "application/json");
       http.setRequestHeader("accept", "application/json");
+      http.setRequestHeader('Access-Control-Allow-Origin', '*')
       http.onreadystatechange = () => {
         if (http.readyState === 4) {
           if (http.status === 200) {
@@ -165,6 +187,21 @@ class Http {
       if (self._handleHTTPError(http)) {
         if (http.responseText) {
           return resolve(JSON.parse(http.responseText));
+        } else {
+          return resolve(true);
+        }
+      } else {
+        return reject(http);
+      }
+    }
+  }
+
+  _handleResponseRaw(http: any, resolve: Function, reject: Function) {
+    const self = this;
+    if (http.readyState === 4) {
+      if (self._handleHTTPError(http)) {
+        if (http.responseText) {
+          return resolve(http.responseText);
         } else {
           return resolve(true);
         }
